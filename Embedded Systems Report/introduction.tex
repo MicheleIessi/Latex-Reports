@@ -1,0 +1,21 @@
+\chapter*{Introduction}
+
+In the Embedded Systems context, it is important for designers to have estimations of spatial occupation and time performance for their projects in order, for example, to choose the final platform for deployment.
+
+Our work is based on the \textit{CC4CS} project\cite{cc4cs_git}. This project aims to build a framework that is able to provide to engineers an estimation for the time their applications, written in C/C++, will take to be executed on the target platform.
+
+If we suppose instead to use a SPP then other HLS tools are useful, such as Vivado HLS\cite{vivado_hls}. For an SPP it is fairly simple to give performance estimations, because a full hardware implementation has a worst case latency that is easier to detect with respect to a programmable processor.
+
+We used Vivado HLS to determine those estimations for several well-known algorithms using the ZedBoard as target platform\cite{zedboard}. After the first evaluation, we improved our results through the usage of various hardware \emph{directives}. These are "rules" given to Vivado HLS in order to have better space and time performance estimations.
+
+In chapter \ref{chapter:description}, after some experimentation to take faimiliarity with the Vivado HLS environment, we describe the context of the work and provide a list of the tested algorithms.
+
+In chapter \ref{chapter:hardware}, we discuss about tools used in our development of the solution to the problem.
+
+In chapter \ref{chapter:software}, we report all the parts related to software implementation of our solution to the problem.
+
+In chapter \ref{chapter:validation}, we describe the validation activities done to demonstrate that our solution works.
+
+In chapter \ref{chapter:conclusion}, we report conclusions of our work and future activities.
+
+In chapter \ref{chapter:problems}, we report problems encountered during every phase of the project.

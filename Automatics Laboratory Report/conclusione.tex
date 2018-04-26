@@ -1,0 +1,7 @@
+\chapter{Conclusione}
+
+Tramite l'uso di un controllore di tipo PID e un controllore di tipo LQR il gruppo ha mostrato come è possibile controllare una sfera sopra un piano tramite l'utilizzo di un microprocessore Arduino, un sensore touch screen resistivo per carpirne la posizione su di essa e due servomotori per cambiarne l'inclinazione.
+
+\subsection{Lavori futuri}
+
+Futuri studi su questo progetto prevedono il raffinamento del controllo tramite LQR e l'inserimento di funzionalità per far tracciare alla sfera varie coordinate, come ad esempio una sfera od un'ellisse. Questa funzionalità è stata parzialmente implementata nel controllo di tipo PID, come è possibile notare dalle funzioni \texttt{computeCircleSetPoint()} e \texttt{computeLemniscateSetPoint()}, che rispettivamente dovrebbero cambiare dinamicamente il setpoint al fine di far tracciare alla sfera un cerchio ed una lemniscàta sul piano.

@@ -1,0 +1,60 @@
+\documentclass[12pt,a4paper]{tesiinfo}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\setcounter{secnumdepth}{4}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage[dvipsnames,table,xcdraw]{xcolor}
+\usepackage{hhline}
+\usepackage[italian]{babel}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{%
+	\parbox{\textwidth}{\colorbox{SkyBlue}{\parbox{\textwidth}{#1#2#3}}\vskip-4pt}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+%\lstset{frame=lrb,xleftmargin=\fboxsep,xrightmargin=-\fboxsep}
+\usepackage{listingsutf8}
+\lstset{
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=8pt,
+	frame=lrb,
+	xleftmargin=\fboxsep,
+	xrightmargin=-\fboxsep,
+	inputencoding=utf8/latin1,
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray},
+	basicstyle=\tiny\ttfamily}
+\usetikzlibrary{shapes,arrows,positioning}
+\usepackage[titletoc]{appendix}
+\graphicspath{{./Immagini/}}
+
+\begin{document}
+\input{primapagina.tex}
+
+\tableofcontents
+
+\input{introduzione.tex}
+\input{ballandplate.tex}
+\input{controllo.tex}
+\input{codicearduino.tex}
+\input{conclusione.tex}
+
+\listoffigures
+
+\bibliografia{main}
+
+\end{document}

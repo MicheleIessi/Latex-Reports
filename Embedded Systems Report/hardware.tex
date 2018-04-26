@@ -1,0 +1,69 @@
+\chapter{Hardware Implementation}
+\label{chapter:hardware}
+In this part we discuss about the tools used in our development of the solution to the problem stated in the introduction.
+
+\section{Description of the Tools Used}
+
+In this section, we will discuss about tools used in order to study the problem and develop a feasible solution.
+
+\subsection{Vivado HLS}
+
+Vivado High-Level Synthesis\cite{vivado_hls} is a software designed by Xilinx. It allows designers to accelerate IP creation by enabling C, C++ and System C specifications to be targeted into Xilinx devices without the need to manually create RTL. Supporting both the ISE\cite{ise} and Vivado design environments, Vivado HLS provides system and design architects alike with a faster path to IP creation by:
+
+\begin{itemize}[noitemsep]
+	\item Abstraction of algorithmic description, data type specification and interfaces
+	\item Extensive library for arbitrary precision data types, video, DSP and more
+	\item Directive driven architecture-aware synthesis that delivers the best possible QoR (Quality of Results)
+	\item Fast time to QoR that rivals hand-coded RTL
+	\item Accelerated verification using C/C++ test bench simulation, automatic VHDL or Verilog simulation and test bench generation
+	\item Multi-language support
+	\item Automatic use of Xilinx on-chip memories, DSP elements and floating point library
+	\item Use of directives
+\end{itemize}
+Furthermore, Vivado HLS supports older architectures specific to ISE Design Suite and installs automatically as part of the Vivado HLx Editions. Problems and relative solutions about installation and utilization of Vivado HLS are available in section \ref{vivado_activation} and \ref{vivado_compile}.
+
+\subsection{Generating VHDL and Verilog code using Vivado HLS}
+
+The main feature of Vivado HLS is that it allows synthesis of C programs into Hardware Description Languages, such as VHDL or Verilog. This allows the program to be effectively ported onto an FPGA, while also providing useful informations such as space occupation and time/latency estimations.
+
+\textit{Directives} (or \textit{Pragmas}) provide means of kernel optimization during the transition from C/C++ to VHDL/Verilog code. The goal of kernel optimization is to create processing logic that can consume all the data as soon as it arrives at the kernel interfaces. This is generally achieved by expanding the processing code to match the data path with techniques such as function pipelining, loop unrolling, array partitioning, dataflowing, etc. The attributes and pragmas described here are provided to assist your optimization effort. A complete list of appliable directives is available on the Xilinx website\cite{xilinx_directives}.
+
+\newpage
+
+\section{Space and Time Estimations}
+\label{sec:spacetime_estimations}
+
+Table \ref{tab:space_time_est} contains information about \textbf{Time Performance} (Estimated Period, Minimum Latency, Maximum Latency) and \textbf{Space Occupation} (DPS, FF, LUT used). We omitted the BRAM space occupation because it was 0 for all algorithms.
+
+The \textit{CC} metric for maximum and minimum latency stands for \textit{Clock Cycles}. The red question marks for the GCD algorithm are due to the fact that it is not possible to do an \textit{a priori} estimation of these parameters, because they depend on the input. 
+
+These estimations have been made with the directive \texttt{TRIPCOUNT}. This directive in used to set boundaries for the loops and cycles whose execution depends on program variables, and was necessary for Vivado HLS in order to give a time estimation.
+
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{l|c|c|c|r|r|r|}
+			\cline{2-7}
+			& \multicolumn{3}{c|}{}                                                           & \multicolumn{3}{l|}{}                                                                                    \\
+			& \multicolumn{3}{c|}{\textbf{Time Performance}}                                  & \multicolumn{3}{c|}{\textbf{Space Occupation}}                                                           \\
+			\multirow{-3}{*}{}                                         & \multicolumn{3}{c|}{}                                                           & \multicolumn{3}{l|}{}                                                                                    \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Algorithm}}                   & \textit{Estimated Period (\textit{ns})} & \textit{Min. Latency (\textit{CC})}    & \textit{Max. Latency (\textit{CC})}    & \multicolumn{1}{c|}{\textit{DSP}} & \multicolumn{1}{c|}{\textit{FF}} & \multicolumn{1}{c|}{\textit{LUT}} \\ \hline
+			\multicolumn{1}{|l|}{Selection Sort}                       & 6.79                      & 73                       & 361                      & 0                                 & 229                              & 436                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bubble Sort}  & 7.64                      & 3                        & 223                      & 0                                 & 551                              & 276                               \\
+			\multicolumn{1}{|l|}{Merge Sort}                           & 7.59                      & 61                       & 1270                     & 0                                 & 3061                             & 1351                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Quick Sort}   & 7.53                      & 2                        & 4911                     & 0                                 & 2373                             & 902                               \\
+			\multicolumn{1}{|l|}{Insertion Sort}                       & 6.79                      & 28                       & 424                      & 0                                 & 260                              & 409                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}GCD}          & 7.34                      & {\color[HTML]{FE0000} ?} & {\color[HTML]{FE0000} ?} & 2                                 & 550                              & 1263                              \\
+			\multicolumn{1}{|l|}{Floyd-Warshall}                       & 6.52                      & 3221                     & 3221                     & 0                                 & 391                              & 248                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bellman-Ford} & 8.73                      & 453                      & 8453                     & 2                                 & 2196                             & 2542                              \\
+			\multicolumn{1}{|l|}{Banker's Algorithm}                   & 8.44                      & 8                        & 69                       & 0                                 & 877                              & 370                               \\ \hline
+		\end{tabular}%
+	}
+	\caption{Time and Space estimations for the algorithms with no directive (except TRIPCOUNT)}
+	\label{tab:space_time_est}
+\end{table}
+

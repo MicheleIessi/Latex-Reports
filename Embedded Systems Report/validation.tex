@@ -1,0 +1,126 @@
+\chapter{Validation}
+\label{chapter:validation}
+With respect to Table \ref{tab:space_time_est}, the team tried to improve overall space occupation and time performances by applying \emph{directives} (or \emph{pragmas}) in each project. A summary description of several directives is in section \ref{sec:directives}. Finally, it is possible to see a recap of this final step in Table \ref{tab:space_time_dir}.
+
+\section{Directives}
+\label{sec:directives}
+
+In this section we summarize the directives used in various step of Vivado HLS usage. A complete and detailed list of all directives has been written on the Xilinx website \cite{xilinx_directives}.
+
+\subsection{\texttt{loop\_tripcount}}
+
+The \texttt{\textbf{TRIPCOUNT}} pragma can be applied to a loop to manually specify the total number of iterations performed by a loop. It is important to know that the \texttt{\textbf{TRIPCOUNT}} pragma is for analysis only, and does not impact the results of synthesis.
+
+Vivado HLS reports the total latency of each loop, which is the number of clock cycles to execute all iterations of the loop. The loop latency is therefore a function of the number of loop iterations, or tripcount.
+
+The \texttt{\textbf{TRIPCOUNT}} can be a constant value. It may depend on the value of variables used in the loop expression (for example, $x<y$), or depend on control statements used inside the loop. In some cases Vivado HLS cannot determine the tripcount, and the latency is unknown. This includes cases in which the variables used to determine the tripcount are:
+\begin{itemize} [noitemsep]
+	\item Input arguments
+	\item Variables calculated by dynamic operations
+\end{itemize}
+
+In cases where the loop latency is unknown or cannot be calculate, the \texttt{\textbf{TRIPCOUNT}} pragma lets you specify minimum and maximum iterations for a loop. This lets the tool analyze how the loop latency contributes to the total design latency in the reports, and helps you determine appropriate optimizations for the design.
+
+In our implementation, we used this directive and gave it a value based on the minimum, average and worst case, depending on the loop variables.
+
+\subsection{\texttt{pipeline}}
+
+The \texttt{\textbf{PIPELINE}} pragma reduces the initiation interval for a function or loop by allowing the concurrent execution of operations. Pipelining a loop allows the operations of the loop to be implemented in a concurrent manner.
+
+A pipelined function or loop can process new inputs every N clock cycles, where N is the initiation interval (\textit{II}) of the loop or function. The default initiation interval for the \texttt{\textbf{PIPELINE}} pragma is 1, which processes a new input every clock cycle. It is also possible to specify the initiation interval through the use of the II option for the pragma.
+
+If Vivado HLS cannot create a design with the specified II, it:
+\begin{itemize}[noitemsep]
+	\item Issues a warning
+	\item Creates a design with the lowest possible II
+\end{itemize}
+
+It is possible to analyze this design with the warning message to determine what steps must be taken to create a design that satisfies the required initiation interval.
+
+\newpage
+\subsection{\texttt{array\_partition}}
+
+The \texttt{\textbf{ARRAY\_PARTITION}} pragma partitions an array into smaller arrays or individual elements. This partitioning:
+\begin{itemize}[noitemsep]
+	\item Results in RTL with multiple small memories or multiple registers instead of one large memory
+	\item Effectively increases the amount of read and write ports for the storage
+	\item Potentially improves the throughput of the design
+	\item Requires more memory instances or registers
+\end{itemize}
+
+The \texttt{\textbf{ARRAY\_PARTITION}} directive has been extensively used in ordering algorithms, due to the fact that input values were arrays.
+
+\subsection{\texttt{\textbf{unroll}}}
+
+The \texttt{\textbf{UNROLL}} pragma unroll loops to create multiple independent operations rather than a single collection of operations. It transforms loops by creating multiples copies of the loop body in the RTL design, which allows some or all loop iterations to occur in parallel.
+
+Loops in the C/C++ functions are kept rolled by default. When loops are rolled, synthesis creates the logic for one iteration of the loop, and the RTL design executes this logic for each iteration of the loop in sequence. A loop is executed for the number of iterations specified by the loop induction variable. The number of iterations might also be impacted by logic inside the loop body (for example, break conditions or modifications to a loop exit variable). Using the \texttt{\textbf{UNROLL}} pragma you can unroll loops to increase data access and throughput.
+
+The \texttt{\textbf{UNROLL}} pragma allows the loop to be fully or partially unrolled. Fully unrolling the loop creates a copy of the loop body in the RTL for each loop iteration, so the entire loop can be run concurrently. Partially unrolling a loop lets you specify a factor \textit{N}, to create \textit{N} copies of the loop body and reduce the loop iterations accordingly. To unroll a loop completely, the loop bounds must be known at compile time. This is not required for partial unrolling.
+
+Partial loop unrolling does not require \textit{N} to be an integer factor of the maximum loop iteration count. Vivado HLS adds an exit check to ensure that partially unrolled loops are functionally identical to the original loop.
+
+When pragmas like \texttt{\textbf{DATA\_PACK}}, \texttt{\textbf{ARRAY\_PARTITION}}, or \texttt{\textbf{ARRAY\_RESHAPE}} are used, in order to let more data be accessed in a single clock cycle, Vivado HLS automatically unrolls any loops consuming this data (if doing so improves the throughput). The loop can be fully or partially unrolled to create enough hardware to consume the additional data in a single clock cycle. This feature is controlled using the \texttt{config\_unroll} command.
+
+\subsection{\texttt{inline}}
+
+The \texttt{\textbf{INLINE}} pragma removes a function as a separate entity in the hierarchy. After inlining, the function is dissolved into the calling function and no longer appears as a separate level of hierarchy in the RTL. In some cases, inlining a function allows operations within the function to be shared and optimized more effectively with surrounding operations. An inlined function cannot be shared. This can increase area required for implementing the RTL.
+
+The \texttt{\textbf{INLINE}} pragma applies differently to the scope it is defined in depending on how it is specified:
+\begin{itemize}
+\item \texttt{INLINE}: Without arguments, the pragma means that the function it is specified in should be inlined upward into any calling functions or regions.
+\item \texttt{INLINE OFF}: Specifies that the function it is specified in should NOT be inlined upward into any calling functions or regions. This disables the inline of a specific function that may be automatically inlined, or inlined as part of a region or recursion.
+\item \texttt{INLINE REGION}: This applies the pragma to the region or the body of the function it is assigned in. It applies downward, inlining the contents of the region or function, but not inlining recursively through the hierarchy.
+\item \texttt{INLINE RECURSIVE}: This applies the pragma to the region or the body of the function it is assigned in. It applies downward, recursively inlining the contents of the region or function.
+\end{itemize}
+By default, inlining is only performed on the next level of function hierarchy, not sub-functions. However, the recursive option lets you specify inlining through levels of the hierarchy.
+
+In our case, we used the \texttt{INLINE OFF} specification of this directive for the Floyd-Warshall's algorithm.
+
+\section{Final Results}
+
+The application of different directives for the algorithms produced the results in Table \ref{tab:space_time_dir}.
+
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{l|l|c|c|c|r|r|r|}
+			\cline{3-8}
+			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\
+			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{\textbf{Time Performance}}                                    & \multicolumn{3}{c|}{\textbf{Space Occupation}}                                                           \\
+			\multicolumn{2}{l|}{\multirow{-3}{*}{}}                                                                                                      & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Algorithm}}                   & \multicolumn{1}{c|}{\textbf{Directives}}                                        & \textit{Estimated Period (ns)}   & \textit{Min. Latency (CC)}    & \textit{Max. Latency (CC)}    & \multicolumn{1}{c|}{\textit{DSP}} & \multicolumn{1}{c|}{\textit{FF}} & \multicolumn{1}{c|}{\textit{LUT}} \\ \hline
+			\multicolumn{1}{|l|}{Selection Sort}                       & ARRAY\_PARTITION                                                                & 8.73                        & 127                      & 271                      & 0                                 & 2353                             & 2120                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bubble Sort}  & TRIPCOUNT                                                                       & 7.64                        & 3                        & 223                      & 0                                 & 551                              & 276                               \\
+			\multicolumn{1}{|l|}{Merge Sort}                           & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\\ PIPELINE\end{tabular} & 7.59                        & 57                       & 909                      & 0                                 & 3802                             & 1770                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Quick Sort}   & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\\ PIPELINE\end{tabular} & 8.68                        & 1                        & 2581                     & 0                                 & 3914                             & 1606                              \\
+			\multicolumn{1}{|l|}{Insertion Sort}                       & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\end{tabular}            & 8.37                        & 28                       & 325                      & 0                                 & 912                              & 1094                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}GCD}          & -                                                                               & 7.34                        & {\color[HTML]{FE0000} ?} & {\color[HTML]{FE0000} ?} & 2                                 & 550                              & 1263                              \\
+			\multicolumn{1}{|l|}{Floyd-Warshall}                       & \begin{tabular}[c]{@{}l@{}}INLINE (off)\\ PIPELINE\end{tabular}                 & {\color[HTML]{FE0000} 9.42} & 2003                     & 2003                     & 0                                 & 423                              & 370                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bellman-Ford} & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ UNROLL\end{tabular}                      & 8.73                        & 446                      & 8446                     & 2                                 & 2178                             & 2620                              \\
+			\multicolumn{1}{|l|}{Banker's Algorithm}                   & \begin{tabular}[c]{@{}l@{}}UNROLL\\ PIPELINE\end{tabular}                       & {\color[HTML]{FE0000} 9.85} & 6                        & 37                       & 0                                 & 1473                             & 997                               \\ \hline
+		\end{tabular}%
+	}
+	\caption{Time and Space estimations for the algorithms with relative directives applied}
+	\label{tab:space_time_dir}
+\end{table}
+
+Values in red are due to different reasons:
+
+\begin{itemize}
+	\item For \texttt{GCD}, it is impossible to predict minimum and maximum latency (in clock cycles) because it depends on the input
+	\item For \texttt{Floyd-Warshall} and \texttt{Banker's Algorithm}, the Estimated Period exceeds the maximum value for the board, that is:
+	\begin{align*}
+	\text{Clock} - \text{Uncertainty} = 10 \text{ ns} - 1.25 \text{ ns} = 8.75 \text{ ns}
+	\end{align*}
+\end{itemize}
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+\chapter{Problems Encountered}
+\label{chapter:problems}
+In this chapter we will discuss about problems encountered during every phase of the project.
+
+\section{Vivado License Activation on Ubuntu}
+\label{vivado_activation}
+License activation for Vivado requires the MAC address of the main network peripheral of the machine. The License Manager looks for any peripheral named \textit{eth*}, where * can be any number. Due to the fact that many laptops and notebooks don't have peripherals named in such way, the Host ID of the machine is listed as all zeros. Thus, it is necessary to manually rename them in order to be found by the License Manager, under the \textit{Host Information} section.
+
+The procedure is as follows: first it is necessary to issue a \texttt{ifconfig} command to the terminal, in order to see the MAC address of the network wireless adapter of the laptop (for example aa:bb:cc:dd:ee:ff). After this, another command must be issued:
+
+\texttt{sudo nano /etc/udev/rules.d/10-network.rules}
+
+This will create a file named \textit{10-network.rules} inside the \texttt{udev} folder. In this file it is necessary to write a single line:
+
+\begin{scriptsize}
+\texttt{SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="aa:bb:cc:dd:ee:ff", NAME="eth0"}
+\end{scriptsize}
+\\*
+This will rename the network adapter to \textit{eth0}, but any number will do. After this, rebooting the machine and executing again the License Manager will correctly show the Host ID under the Host Informations section.
+
+\section{Compile Errors for Vivado HLS Labs on Ubuntu}
+\label{vivado_compile}
+There can be issues when compiling lab files in the Vivado HLS tutorial. To solve them, the procedure is to install the packet \texttt{libc6-dev-i386} (when on a 64 bit machine). After that, two more commands are required in order to compile successfully:
+
+\texttt{LIBRARY\_PATH=/usr/lib/x86\_64-linux-gnu:\$LIBRARY\_PATH}
+
+\texttt{export LIBRARY\_PATH}
+
+Now there are no more problems when issueing the \texttt{make} command.

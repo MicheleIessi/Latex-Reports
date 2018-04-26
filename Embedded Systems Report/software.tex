@@ -1,0 +1,222 @@
+\chapter{Software Implementation}
+\label{chapter:software}
+In this chapter we discuss about our work in splitting the \texttt{.c} files from the CC4CS Github repository\cite{cc4cs_git} to \texttt{.c} and \texttt{.h} files that can be used with Vivado HLS. They have been pushed into a repository of their own\cite{repo_our_files}.
+
+After this, we describe our workflow in implementing and testing the correctness of our software and hardware realizations of the described algorithms.
+
+\section{General Workflow}
+
+The first thing we did was to split the original C file into 3 separate files:
+
+\begin{itemize}[noitemsep]
+	\item \textbf{Algorithm \texttt{.c} and \texttt{.h} files}
+	\begin{itemize}[noitemsep]
+		\item \texttt{.c} file: this file contains the functions that implement the chosen algorithm
+		\item \texttt{.h} file: this file contains the definitions for important constants (\textit{e.g.}: input dimension), data types, iterator types and functions of the chosen algorithm
+	\end{itemize}
+	\item \textbf{Algorithm testbench file}: this file generates input data and verifies that both the software and VHDL simulation (\textbf{Co-Simulation}) produce the same results
+\end{itemize}
+
+
+The general workflow diagram is in figure \ref{figure:translation}.
+\newpage
+\begin{figure}[ht]
+	\begin{center}
+		\begin{tikzpicture}[auto, node distance=1.2cm,>=latex']
+
+		
+		\node[] (c-original) {
+			\includegraphics[scale=.3]{c_redefined}};
+		\node[below=0.1cm of c-original] {C original file};
+		\node[below right = 3cm of c-original] (ch-translated) {
+			\includegraphics[scale=.2]{c+h_redefined}};
+		\node[below=0.1cm of ch-translated] (ch-tooltip) {C and Header files};
+		\node[below left = 3cm of c-original] (c-testbench) {
+			\includegraphics[scale=.3]{c_redefined}};
+		\node[below=0.1cm of c-testbench] (testbench-tooltip) {C testbench file};
+		\node[below=3cm of ch-translated] (vhdl) {
+			\includegraphics[scale=.8]{vhdl}};
+		\node[below=0.1cm of vhdl] (vhdl-tooltip) {VHDL files};
+		\node[left=1cm of c-testbench] (resultMid) {};		
+		\node[above=0.1cm of resultMid] (resultPass) {
+			\textit{\color{ForestGreen}{Passed}}};
+		\node[below=0.1cm of resultMid] (resultNot) {
+			\textit{\color{red}{Not Passed}}};
+		
+		\draw [->,>=latex] (c-original) -| (ch-translated);
+		\draw [->,>=latex] (c-original) -| (c-testbench);
+		\draw [->,>=latex] (ch-tooltip) -- node[] {Synthesis} (vhdl);
+		\draw [->,>=latex] (vhdl) -| node[above right] {Co-Simulation} (testbench-tooltip);
+ 		\draw [->,>=latex] (ch-translated) -- node[above] {Co-Simulation} (c-testbench);
+ 		\draw [->,>=latex] (c-testbench) -- (resultMid);
+		\end{tikzpicture}
+		
+	\end{center}
+	\caption{Workflow}
+	\label{figure:translation}
+	
+\end{figure}
+
+\newpage
+\section{Algorithm File Splitting Example}
+
+Here we describe the process of splitting a .c file from the original repository to a .c and .h file. As we said earlier, this process allows to customize data input types and sizes. We did this to give other developers the possibility to evaluate the same algorithms by using different input formats.
+
+As an example, we show this process for the MergeSort algorithm in Listing \ref{lst:mergesort_original}.
+
+\begin{lstlisting}[label=lst:mergesort_original,caption=Original Mergesort Code,language=C,tabsize=4]
+#include <stdint.h>
+#include <values.h>
+#include <8051.h>
+
+typedef long TARGET_TYPE;
+typedef int8_t TARGET_INDEX;
+void prototype(long size, long a[size]);
+TARGET_INDEX h = 0;
+
+void resetValues() {
+	P0 = 0;
+	P1 = 0;
+	P2 = 0;
+	P3 = 0;
+}
+
+void merge(TARGET_INDEX i1, TARGET_TYPE f1, TARGET_TYPE f2) {
+	TARGET_TYPE x[size];
+	TARGET_INDEX i2 = f1 + 1;
+	TARGET_INDEX i = 0;
+	TARGET_TYPE start = i1;	
+	
+	while(i1 <= f1 && i2 <= f2) {
+		if(a[i1] <= a[i2])
+		x[i++] = a[i1++];
+		else
+		x[i++] = a[i2++];
+	}
+	if(i1 <= f1) {
+		for(h = i1; h <= f1; h++) 
+			x[i++] = a[h];
+	}
+	else {
+		for(h = i2; h <= f2; h++)
+			x[i++] = a[h];
+	}
+	for(h = start, i = 0;h <= f2; h++)
+		a[h] = x[i++];
+}
+
+TARGET_TYPE min(TARGET_TYPE c, TARGET_TYPE b) {
+	return c < b ? c : b;
+}
+
+void mergesort() {
+	TARGET_TYPE m = 0;
+	TARGET_TYPE x = 0;
+	
+	for(m = 1; m <= size-1; m *= 2) {
+		for(x = 0; x < size-1; x += (2*m)) {
+			merge(x, x+m-1, min(x + 2*m - 1, size-1));
+		}
+	}
+}
+
+void main() {
+	mergesort();
+	resetValues();
+}
+\end{lstlisting}
+
+
+It is worth noting that this code has been partially refactored to better fit in this report. Also, the original code had \texttt{for} cycles that were spanned on 3 lines. This was made in this way to let the profiler (\texttt{gcov}) count correctly C statements in the original \textit{CC4CS} project. Therefore, we only used one line for the sake of visualization.
+
+\subsection{Removed and Moved Code}
+
+The first main modification done on the code was removing the \texttt{resetValues()} method. The duty of this method was to give a stop condition when the algorithm was run onto an 8051 Microcontroller. Other parts were removed as well due to this (line \texttt{3} and \texttt{52}).
+
+The second modification on the code was creating a header file and moving parts of the code within it. This allows for great customizability and code reuse, as the .c file is independent from data types. More specifically, the variables moved inside the header file were \texttt{TARGET\_TYPE} and \texttt{TARGET\_INDEX}. A \texttt{define} named \texttt{SIZE} was also added to let the developer choose the size of the input.
+
+The code in Listings \ref{lst:mergesort_header} and \ref{lst:mergesort_c} represent the final \texttt{.h} and \texttt{.c} files.
+
+\bigskip
+
+\begin{lstlisting}[label=lst:mergesort_header,caption=Mergesort Header File,language=C,tabsize=4]
+#ifndef __MERGESORT_H__
+#define __MERGESORT_H__
+
+#include <stdint.h>
+
+#define SIZE 10
+
+typedef long TARGET_TYPE;
+typedef long TARGET_INDEX;
+
+void mergesort(long arr[SIZE]);
+
+#endif
+\end{lstlisting}
+
+\newpage
+
+\begin{lstlisting}[label=lst:mergesort_c,caption=Mergesort C File,language=C,tabsize=4]
+#include "mergesort.h"
+
+int8_t h = 0;
+
+void merge(TARGET_INDEX i1, TARGET_INDEX f1, TARGET_INDEX f2, TARGET_TYPE arr[SIZE]) {
+	TARGET_TYPE x[SIZE];
+	TARGET_INDEX i2 = f1 + 1;
+	TARGET_INDEX i = 0;
+	TARGET_TYPE start = i1;
+	
+	MERGE_WHILE:
+	while(i1 <= f1 && i2 <= f2) {
+		if(arr[i1] <= arr[i2])
+		x[i++] = arr[i1++];
+		else
+		x[i++] = arr[i2++];
+	}	
+	if(i1 <= f1) {
+	MERGE_FOR1:
+	for(h = i1; h <= f1; h++)
+		x[i++] = arr[h];
+	}
+	else {
+	MERGE_FOR2:
+	for(h = i2;	h <= f2; h++)
+		x[i++] = arr[h];
+	}
+	MERGE_FOR3:
+	for(h = start, i = 0; h <= f2; h++)
+	arr[h] = x[i++];
+}
+
+TARGET_TYPE min(TARGET_TYPE c, TARGET_TYPE b) {
+	return c < b ? c : b;
+}
+
+void mergesort(TARGET_TYPE arr[SIZE]) {
+	TARGET_INDEX m = 0;
+	TARGET_INDEX x = 0;
+	FOR1:
+	for(m = 1; m <= SIZE-1; m *= 2) {
+		FOR2:
+		for(x = 0; x < SIZE-1; x += (2*m)) {
+			merge(x, x+m-1, min(x + 2*m - 1, SIZE-1), arr);
+		}
+	}
+}
+\end{lstlisting}
+
+% scrivere a che servono i label
+
+
+
+
+
+
+
+
+
+
+
+

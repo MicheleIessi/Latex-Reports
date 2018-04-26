@@ -1,0 +1,83 @@
+\documentclass[12pt,a4paper]{tesiinfo}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{longtable}
+%\usepackage{titlesec}
+\usepackage{hyperref}
+\setcounter{secnumdepth}{4}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage[dvipsnames,table,xcdraw]{xcolor}
+\usepackage{hhline}
+\usepackage[english]{babel}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{listingsutf8}
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{%
+	\parbox{\textwidth}{\colorbox{RoyalBlue}{\parbox{\textwidth}{#1#2#3}}\vskip-4pt}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+\lstset{frame=lrb,xleftmargin=\fboxsep,xrightmargin=-\fboxsep}
+
+\lstset{
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=8pt,
+	frame=lrb,
+	xleftmargin=\fboxsep,
+	xrightmargin=-\fboxsep,
+	inputencoding=utf8/latin1,
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray},
+	basicstyle=\tiny\ttfamily}
+
+\lstdefinestyle{framed}
+{
+	frame=blr,         
+	belowcaptionskip=-1pt,
+	xleftmargin=8pt,
+	framexleftmargin=8pt,
+	%backgroundcolor=\color{gray!10},
+	framexrightmargin=5pt,
+	framextopmargin=10pt,
+	framexbottommargin=5pt,
+	framesep=0pt,
+	rulesep=0pt,
+	numbersep=-4pt,
+	numberstyle=\tiny\color{darkgray},
+	rulecolor=\color{black}
+}
+\usetikzlibrary{shapes,arrows,positioning}
+
+\graphicspath{{./Immagini/}}
+
+\begin{document}
+	
+	
+	\input{primapagina.tex}
+	
+	\tableofcontents
+	
+	\input{introduction.tex}
+	\input{description.tex}
+	\input{hardware.tex}
+	\input{software.tex}
+	\input{validation.tex}
+	\input{conclusion.tex}
+	\input{problems.tex}
+	
+	\listoffigures
+	
+	\bibliografia{main}
+	
+\end{document}

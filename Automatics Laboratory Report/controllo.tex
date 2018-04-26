@@ -1,0 +1,126 @@
+\chapter{Controllo}
+\label{chapter:controllo}
+
+In questo capitolo vengono descritti i metodi utilizzati per controllare il sistema Ball and Plate.
+
+\section{Controllo PID}
+
+Il controllo \textbf{Proporzionale-Integrale-Derivativo} (\textit{PID}) è un sistema di controllo a retroazione negativa ampiamente utilizzato nei sistemi di controllo e nell'industria. Comunemente impiegato senza l'azione derivativa (controllo \textit{PI}), registrando una misura attuale e comparandola con un valore desiderato è in grado di agire su di esso con tre criteri differenti, e far tendere l'errore a 0.
+
+La possibilità di cambiare la magnitudine delle varie azioni correttive ne fa un tipo di controllo molto versatile e molto semplice da implementare.
+\bigskip
+
+In particolare, il PID regola l'uscita in base a:
+\begin{itemize}[noitemsep]
+	\item Il valore attuale del segnale di errore (azione \textbf{proporzionale})
+	\item I valori passati del segnale di errore (azione \textbf{integrale})
+	\item La velocità di variazione del segnale di errore (azione \textbf{derivativa})
+\end{itemize}
+
+
+\tikzstyle{block} = [draw, fill=green!10, rectangle, minimum height=2em, minimum width=6em]
+\tikzstyle{sum} = [draw, fill=cyan!20, circle, node distance=2cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+\begin{figure}[ht]
+	\begin{center}
+		\begin{tikzpicture}[auto, node distance=1.2cm,>=latex']
+		
+		\node [input, name=input] {};
+		\node [right=0.3cm of input] (setpoint) {\scriptsize Setpoint};
+		\node [sum, right=0.3cm of setpoint] (sum) {$\Sigma$};
+		\node [right=0.3cm of sum] (error) {\scriptsize Errore};
+		\node [block, right=0.3cm of error] (integral) {\scriptsize \textbf{I} $K_{I}\int_{t_{0}}^{t}e(\tau)d\tau$};
+		\node [block, above of=integral] (proportional) {\scriptsize \textbf{P} $K_{P}e(t)$};
+		\node [block, below of=integral] (derivative) {\scriptsize \textbf{D} $K_{D}\dfrac{de(t)}{dt}$};
+		\node [sum, right of=integral] (sum2) {$\Sigma$};
+		\node [block, right=0.5cm of sum2] (process) {\scriptsize Processo};
+		\node [right=0.3cm of process] (outputText) {\scriptsize Output};
+		\node [output, name=output, right of=outputText] {};
+		
+		
+		\draw (input) -- (setpoint);
+		\draw [->] (setpoint) -- node {$+$} (sum);
+		\draw (sum) -- (error); 
+		\draw [->] (error) -- (integral);
+		\draw [->] (error) |- (proportional);
+		\draw [->] (error) |- (derivative);
+		\draw [->] (integral) -- (sum2);
+		\draw [->] (proportional) -| (sum2);
+		\draw [->] (derivative) -| (sum2);
+		\draw [->] (sum2) -- (process);
+		\draw (process) -- (outputText);
+		\draw [->] (outputText) -- ++ (0,-2) -| node [pos=0.95] {$-$} (sum);
+		\draw [->] (outputText) -- (output);
+		
+		\end{tikzpicture}
+		
+	\end{center}
+	\caption{Schema a blocchi di un controllo PID}
+	\label{figure:pid}
+\end{figure}
+
+È possibile visualizzare il diagramma a blocchi del controllore PID in figura \ref{figure:pid}. Per il controllo del sistema Ball and Plate sono stati implementati due controllori PID, uno per l'asse $x$ e l'altro per l'asse $y$. 
+
+Il \textit{Setpoint} è rappresentato dalla coordinata che si vuole far raggiungere alla sfera, e l'errore è la differenza tra la posizione attuale della sfera (rilevata tramite il touch screen resistivo) e quella desiderata.
+
+La legge di controllo del sistema regolatore è:
+
+\begin{equation}
+	u_{c}=u_{P}+u_{I}+u_{D}
+\end{equation}
+
+La legge di controllo del sistema regolatore nel tempo è:
+
+\begin{equation}
+	u_{c}(t) = K_{P}e(t)+K_{I}\int_{t_{0}}^{t}e(\tau)d\tau + K_{D}\dfrac{de(t)}{dt}
+\end{equation}
+
+La stessa funzione scritta mediante l'uso della trasformata di Laplace è:
+
+\begin{equation}
+	G(s) = K_{P}+\dfrac{K_{I}}{s}+K_{D}s=\dfrac{K_{D}s^{2}+K_{p}s+K_{I}}{s}
+\end{equation}
+
+
+\section{Controllo LQR}
+
+Consideriamo un sistema lineare e controllabile descritto da:
+
+\begin{equation}
+	\dot{x}(t) = Fx(t)+Gu(t)
+\end{equation}
+con $x$ e $u$ rispettivamente vettore di stato e vettore degli ingressi di controllo. Date due matrici di peso $Q$ e $R$, la minimizzazione dell'indice $J$ definito da:
+
+\begin{equation}
+	J=\int_{0}^{\infty}[x^{T}(t)Qx(t)+u^{T}(t)Ru(t)]dt
+\end{equation}
+
+permette di individuare un controllore ottimo:
+
+\begin{equation}
+	u(t) = -Kx(t)
+\end{equation}
+
+che rende il sistema asintoticamente stabile, dove $K$ è la matrice dei guadagni di retroazione e si può esprimere con:
+
+\begin{equation}
+	K=R^{-1}G^{T}P
+\end{equation}
+
+P è la soluzione dell'equazione algebrica di Riccati (\textit{ARE}):
+
+\begin{equation}
+	PF+F^{T}P-PGR^{-1}G^{T}P=-Q
+\end{equation}
+
+
+
+
+
+
+
+
+
+

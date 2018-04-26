@@ -1,0 +1,96 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+
+\begin{document}
+	
+	\title{Report - Time and Space Estimations for Algorithms (With and Without Directives)}
+	\author{Angelo Damiani, Michele Iessi, Silvia Montecchia}
+	\maketitle
+	
+	\chapter*{Latency and Space Estimates by Algorithm}
+
+\section*{Without directives}
+
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+% \usepackage{graphicx}
+\begin{small}
+	
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{l|c|c|c|r|r|r|}
+			\cline{2-7}
+			& \multicolumn{3}{c|}{}                                                           & \multicolumn{3}{l|}{}                                                                                    \\
+			& \multicolumn{3}{c|}{\textbf{Time Performance}}                                  & \multicolumn{3}{c|}{\textbf{Space Occupation}}                                                           \\
+			\multirow{-3}{*}{}                                         & \multicolumn{3}{c|}{}                                                           & \multicolumn{3}{l|}{}                                                                                    \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Algorithm}}                   & \textit{Estimated Period} & \textit{Min. Latency}    & \textit{Max. Latency}    & \multicolumn{1}{c|}{\textit{DSP}} & \multicolumn{1}{c|}{\textit{FF}} & \multicolumn{1}{c|}{\textit{LUT}} \\ \hline
+			\multicolumn{1}{|l|}{Selection Sort}                       & 6.79                      & 73                       & 361                      & 0                                 & 229                              & 436                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bubble Sort}  & 7.64                      & 3                        & 223                      & 0                                 & 551                              & 276                               \\
+			\multicolumn{1}{|l|}{Merge Sort}                           & 7.59                      & 61                       & 1270                     & 0                                 & 3061                             & 1351                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Quick Sort}   & 7.53                      & 2                        & 4911                     & 0                                 & 2373                             & 902                               \\
+			\multicolumn{1}{|l|}{Insertion Sort}                       & 6.79                      & 28                       & 424                      & 0                                 & 260                              & 409                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}GCD}          & 7.34                      & {\color[HTML]{FE0000} ?} & {\color[HTML]{FE0000} ?} & 2                                 & 550                              & 1263                              \\
+			\multicolumn{1}{|l|}{Floyd-Warshall}                       & 6.52                      & 3221                     & 3221                     & 0                                 & 391                              & 248                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bellman-Ford} & 8.73                      & 453                      & 8453                     & 2                                 & 2196                             & 2542                              \\
+			\multicolumn{1}{|l|}{Banker's Algorithm}                   & 8.44                      & 8                        & 69                       & 0                                 & 877                              & 370                               \\ \hline
+		\end{tabular}%
+	}
+	\caption{Time and Space estimations for the algorithms with no directive (except TRIPCOUNT)}
+	\label{my-label}
+\end{table}
+
+
+\newpage
+\section*{With directives}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{l|l|c|c|c|r|r|r|}
+			\cline{3-8}
+			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\
+			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{\textbf{Time Performance}}                                    & \multicolumn{3}{c|}{\textbf{Space Occupation}}                                                           \\
+			\multicolumn{2}{l|}{\multirow{-3}{*}{}}                                                                                                      & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\ \hline
+			\multicolumn{1}{|c|}{\textbf{Algorithm}}                   & \multicolumn{1}{c|}{\textbf{Directives}}                                        & \textit{Estimated Period}   & \textit{Min. Latency}    & \textit{Max. Latency}    & \multicolumn{1}{c|}{\textit{DSP}} & \multicolumn{1}{c|}{\textit{FF}} & \multicolumn{1}{c|}{\textit{LUT}} \\ \hline
+			\multicolumn{1}{|l|}{Selection Sort}                       & ARRAY\_PARTITION                                                                & 8.73                        & 127                      & 271                      & 0                                 & 2353                             & 2120                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bubble Sort}  & TRIPCOUNT                                                                       & 7.64                        & 3                        & 223                      & 0                                 & 551                              & 276                               \\
+			\multicolumn{1}{|l|}{Merge Sort}                           & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\\ PIPELINE\end{tabular} & 7.59                        & 57                       & 909                      & 0                                 & 3802                             & 1770                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Quick Sort}   & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\\ PIPELINE\end{tabular} & 8.68                        & 1                        & 2581                     & 0                                 & 3914                             & 1606                              \\
+			\multicolumn{1}{|l|}{Insertion Sort}                       & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ ARRAY\_PARTITION\end{tabular}            & 8.37                        & 28                       & 325                      & 0                                 & 912                              & 1094                              \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}GCD}          & -                                                                               & 7.34                        & {\color[HTML]{FE0000} ?} & {\color[HTML]{FE0000} ?} & 2                                 & 550                              & 1263                              \\
+			\multicolumn{1}{|l|}{Floyd-Warshall}                       & \begin{tabular}[c]{@{}l@{}}INLINE (off)\\ PIPELINE\end{tabular}                 & {\color[HTML]{FE0000} 9.42} & 2003                     & 2003                     & 0                                 & 423                              & 370                               \\
+			\rowcolor[HTML]{DDDDDD} 
+			\multicolumn{1}{|l|}{\cellcolor[HTML]{DDDDDD}Bellman-Ford} & \begin{tabular}[c]{@{}l@{}}TRIPCOUNT\\ UNROLL\end{tabular}                      & 8.73                        & 446                      & 8446                     & 2                                 & 2178                             & 2620                              \\
+			\multicolumn{1}{|l|}{Banker's Algorithm}                   & \begin{tabular}[c]{@{}l@{}}UNROLL\\ PIPELINE\end{tabular}                       & {\color[HTML]{FE0000} 9.85} & 6                        & 37                       & 0                                 & 1473                             & 997                               \\ \hline
+		\end{tabular}%
+	}
+	\caption{Time and Space estimations for the algorithms with the relative directives applied}
+	\label{my-label}
+\end{table}
+
+	
+\end{small}
+\end{document}

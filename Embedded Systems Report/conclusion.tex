@@ -1,0 +1,42 @@
+\chapter{Conclusion and Future Activities}
+\label{chapter:conclusion}
+
+In this document we showed that using directives it is possible to improve performance estimations for various algorithms. This may be used by designers to have estimations of spatial occupation and time performance for their projects in order, for example, to choose the final platform for deployment.
+
+\section{Future Activities}
+
+Future activities for this project could be:
+
+\begin{itemize}[noitemsep]
+	\item Using different input dimensions, since our estimations were only for few input dimensions (described in section \ref{tested-algo}), one for each algorithm
+	\item Using different input/output data types, since our implementation let the developer choose which to use, but for simplicity purposes we used only few of them (described in section \ref{tested-algo})
+	\item Test more directives
+	\item Test other algorithms
+\end{itemize}
+
+\newpage
+
+\subsection*{Considerations About Integration with CC4CS}
+
+Our team thought about developing scripts (in Python, Perl or sh) to automate the process of creating new input data of different dimension and type, in order to test time performance for different kinds of input. 
+
+It is worth noticing that this process would be only useful in the co-simulation phase, because the phase of C Synthesis only gives information about space and time performance for the algorithm, considering only the \textbf{input data type} and not the input \textit{per se}.
+
+So our team believes that such a result would be possible to achieve, given the following constraints:
+
+\begin{itemize}
+	\item For the phase of \textbf{C Synthesis}:
+	\begin{itemize}
+		\item The script should edit the \texttt{.h} file for each algorithm, in order to modify input dimension and data type
+		\item A series of \emph{API} should be available for Vivado HLS, or at least some access points to the program, in order to start automatically the process of Synthesis and from which retrieve the results (such as those visible in table \ref{tab:space_time_dir})
+		\item Enough time for the execution of multiple C Synthesis phases. On a medium-high end machine, this phase took about 7-8 seconds to execute
+	\end{itemize}
+	\item For the phase of \textbf{Co-Simulation}:
+	\begin{itemize}
+		\item All previous points
+		\item It would be necessary to edit all testbench files to let them accept optional parameters (input array/matrices) from console
+		\item Enough time for the execution of multiple Co-Simulation phases. On a medium-high end machine, this phase took about 15-20 seconds for input
+	\end{itemize}
+\end{itemize}
+
+In conclusion, this process should be doable given the presence of a Vivado HLS access point from console/API. Moreover, if such access points existed, it would be also possible to change the target platform \textit{on demand}, and completely integrate Vivado HLS with the \textit{CC4CS} framework.
