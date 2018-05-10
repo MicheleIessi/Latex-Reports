@@ -1,0 +1,96 @@
+\chapter{Algorithm Characteristics}
+\label{app:algoritmi}
+
+The purpose of this appendix is to explain which are the critical parts of the algorithms
+(described in section \ref{tested-algo}) that require the use of Directives. The complete
+code can be found in the repository \cite{repo_our_files}.
+
+\section{Sorting Algorithms}
+
+Given an array of $n$ numeric elements, a sorting algorithm sorts the array (ascending or descending).
+
+\bigskip\noindent
+\emph{Selection Sort} is a sorting algorithm with complexity $O(n^2)$. It presents a nested loop 
+in which it compares sequentially each element to the next ones, in order to progressively build
+the final sorted array.
+
+\bigskip \noindent
+\emph{Bubble Sort} is a sorting algorithm with complexity $O(n^2)$. It presents a nested loop 
+in which it compares sequentially each element to the next one, and they are switched if the first
+is greater than the second. At the end of each iteration the greatest element of the array is in the
+right position. The algorithm is then repeated considering the array without the last element.
+
+\bigskip \noindent
+\emph{Merge Sort} is a sorting algorithm with complexity $O(n\log{n})$. It splits 
+the array into two until the split parts have dimension 1. It then proceeds to reorder them
+from the bottom. It has two loops, one nested into the other: the outermost has a loop control
+variable that doubles at each iteration, while the innermost loop cycles all the array
+and is responsible for the merging of each sub-array created in the splitting procedure.
+
+\bigskip \noindent
+\emph{Quick Sort} is a sorting algorithm with complexity $O(n\log{n})$ in the average case, and 
+$O(n^2)$ in the worst case. It has a loop where it picks iteratively a pivot element at each 
+iteration. The \texttt{partition} function has 2 nested loops, it finds the pivot element and 
+sorts the other elements with respect to this one.
+
+\bigskip \noindent
+\emph{Insertion Sort} is a sorting algorithm with complexity $O(n^2)$. Starting from the first
+element of the array, it picks each non-considered one and finds its correct position in the array 
+of already ones. It loops $n$ times, where $n$ is the dimension of the array, because at each
+iteration the considered element is put in the right position with respect to the other elements
+that have already been considered.
+
+
+\section{Shortest Path Algorithms}
+
+Given a graph with weighted edges between nodes, a shortest path algorithm finds the best path from 
+a single node to the others (Single Source Shortest Path - \emph{SSSP}) or from each node to the others 
+(All Pairs Shortest Paths - \emph{APSP}).
+
+\bigskip \noindent
+\emph{Bellman-Ford Algorithm} is a SSSP algorithm with complexity $O(m\times n)$,
+where $m$ is the cardinality of the set of all edges in the graph, and $n$ is the cardinality of the set
+of all nodes in the graphs. The inputs for the algorithm are the adjacency matrix of the graph 
+and the vector of distances. It first initializes all distances from the source (the first element of the
+vector of distances) as infinite, then proceeds to find the path cost from the source to each node. 
+The algorithm converges in n iterations (each with cost $O(m)$) if there are no negative cost cycles
+inside the graph. It has two nested loops, one used to cycle over the nodes and the other to cycle over
+all edges for that node. 
+
+\bigskip \noindent
+\emph{Floyd-Warshall Algorithm} is a APSP algorithm with complexity $O(n^3)$. The input for the algorithm
+is the adjacency matrix of the graph. It has 3 nested loops, where it cycles over the matrix to build
+another matrix (of distances), that contains the cost of the paths from each node to the others.
+
+\section{Other Algorithms}
+
+This section contains a resource allocation algorithm (Banker's Algorithm) and the description for
+the Greater Common Divisor algorithm.
+
+\bigskip \noindent
+\emph{Banker's Algorithm} is a resource allocation algorithm with complexity $O(n^2 \times m)$, where $n$
+is the number of processes and $m$ is the number of available resources. The inputs for the algorithm
+are one arrays and three matrices: an array of \emph{available resources}, a matrix of \emph{allocated
+resources}, a matrix of \emph{max resources} and a matrix of \emph{resource needs}. It is used to avoid
+deadlock, and it has two nested loops where it tries to find the best allocation for each process
+that does not block the others.
+
+\bigskip \noindent
+\emph{(Euclidean) Greater Common Divisor Algorithm} is an algorithm with complexity that is never
+higher than five times the number of digits of the smaller number (in base 10), and thus can be expressed
+as $(O\log n)$. It has a loop where it finds the modulo between the two input numbers, 
+then swaps the smaller with the greater and the modulo with the smaller and continues until the
+modulo becomes 0.
+
+
+
+
+
+
+
+
+
+
+
+
+

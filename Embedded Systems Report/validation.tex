@@ -1,11 +1,11 @@
 \chapter{Validation}
 \label{chapter:validation}
-With respect to Table \ref{tab:space_time_est}, the team tried to improve overall space occupation and time performances by applying \emph{directives} (or \emph{pragmas}) in each project. A summary description of several directives is in section \ref{sec:directives}. Finally, it is possible to see a recap of this final step in Table \ref{tab:space_time_dir}.
+With respect to Table \ref{tab:space_time_est}, the team tried to improve overall space occupation and time performance by applying \emph{directives} (or \emph{pragmas}) in each project. A summary description of several directives is in section \ref{sec:directives}. Finally, it is possible to see a recap of this final step in Table \ref{tab:space_time_dir}.
 
 \section{Directives}
 \label{sec:directives}
 
-In this section we summarize the directives used in various step of Vivado HLS usage. A complete and detailed list of all directives has been written on the Xilinx website \cite{xilinx_directives}.
+In this section we summarize the directives used in various steps of Vivado HLS usage. A complete and detailed list of all directives is reported on the Xilinx website \cite{xilinx_directives}.
 
 \subsection{\texttt{loop\_tripcount}}
 
@@ -13,7 +13,7 @@ The \texttt{\textbf{TRIPCOUNT}} pragma can be applied to a loop to manually spec
 
 Vivado HLS reports the total latency of each loop, which is the number of clock cycles to execute all iterations of the loop. The loop latency is therefore a function of the number of loop iterations, or tripcount.
 
-The \texttt{\textbf{TRIPCOUNT}} can be a constant value. It may depend on the value of variables used in the loop expression (for example, $x<y$), or depend on control statements used inside the loop. In some cases Vivado HLS cannot determine the tripcount, and the latency is unknown. This includes cases in which the variables used to determine the tripcount are:
+The \texttt{\textbf{TRIPCOUNT}} can be a constant value. It may depend on the value of variables used in the loop expression (for example, $x<y$), or it depends on control statements used inside the loop. In some cases Vivado HLS cannot determine the tripcount, and the latency is unknown. This includes cases in which the variables used to determine the tripcount are:
 \begin{itemize} [noitemsep]
 	\item Input arguments
 	\item Variables calculated by dynamic operations
@@ -54,9 +54,9 @@ The \texttt{\textbf{ARRAY\_PARTITION}} directive has been extensively used in or
 
 The \texttt{\textbf{UNROLL}} pragma unroll loops to create multiple independent operations rather than a single collection of operations. It transforms loops by creating multiples copies of the loop body in the RTL design, which allows some or all loop iterations to occur in parallel.
 
-Loops in the C/C++ functions are kept rolled by default. When loops are rolled, synthesis creates the logic for one iteration of the loop, and the RTL design executes this logic for each iteration of the loop in sequence. A loop is executed for the number of iterations specified by the loop induction variable. The number of iterations might also be impacted by logic inside the loop body (for example, break conditions or modifications to a loop exit variable). Using the \texttt{\textbf{UNROLL}} pragma you can unroll loops to increase data access and throughput.
+Loops in the C/C++ functions are kept rolled by default. When loops are rolled, synthesis creates the logic for one iteration of the loop, and the RTL design executes this logic for each iteration of the loop in sequence. A loop is executed for the number of iterations specified by the loop induction variable. The number of iterations might also be impacted by logic inside the loop body (for example, break conditions or modifications to a loop exit variable). Using the \texttt{\textbf{UNROLL}} pragma it is possible to unroll loops to increase data access and throughput.
 
-The \texttt{\textbf{UNROLL}} pragma allows the loop to be fully or partially unrolled. Fully unrolling the loop creates a copy of the loop body in the RTL for each loop iteration, so the entire loop can be run concurrently. Partially unrolling a loop lets you specify a factor \textit{N}, to create \textit{N} copies of the loop body and reduce the loop iterations accordingly. To unroll a loop completely, the loop bounds must be known at compile time. This is not required for partial unrolling.
+The \texttt{\textbf{UNROLL}} pragma allows the loop to be fully or partially unrolled. Fully unrolling the loop creates a copy of the loop body in the RTL for each loop iteration, so the entire loop can be run concurrently. Partially unrolling a loop gives the possibility to specify a factor \textit{N}, to create \textit{N} copies of the loop body and reduce the loop iterations accordingly. To unroll a loop completely, the loop bounds must be known at compile time. This is not required for partial unrolling.
 
 Partial loop unrolling does not require \textit{N} to be an integer factor of the maximum loop iteration count. Vivado HLS adds an exit check to ensure that partially unrolled loops are functionally identical to the original loop.
 
@@ -64,18 +64,18 @@ When pragmas like \texttt{\textbf{DATA\_PACK}}, \texttt{\textbf{ARRAY\_PARTITION
 
 \subsection{\texttt{inline}}
 
-The \texttt{\textbf{INLINE}} pragma removes a function as a separate entity in the hierarchy. After inlining, the function is dissolved into the calling function and no longer appears as a separate level of hierarchy in the RTL. In some cases, inlining a function allows operations within the function to be shared and optimized more effectively with surrounding operations. An inlined function cannot be shared. This can increase area required for implementing the RTL.
+By using the \texttt{\textbf{INLINE}} pragma on a function, this is dissolved into the calling function and no longer appears as a separate level of hierarchy in the RTL. In some cases, inlining a function allows operations within the function to be shared and optimized more effectively with surrounding operations. An inlined function cannot be shared. This can increase area required for implementing the RTL.
 
 The \texttt{\textbf{INLINE}} pragma applies differently to the scope it is defined in depending on how it is specified:
 \begin{itemize}
-\item \texttt{INLINE}: Without arguments, the pragma means that the function it is specified in should be inlined upward into any calling functions or regions.
-\item \texttt{INLINE OFF}: Specifies that the function it is specified in should NOT be inlined upward into any calling functions or regions. This disables the inline of a specific function that may be automatically inlined, or inlined as part of a region or recursion.
-\item \texttt{INLINE REGION}: This applies the pragma to the region or the body of the function it is assigned in. It applies downward, inlining the contents of the region or function, but not inlining recursively through the hierarchy.
-\item \texttt{INLINE RECURSIVE}: This applies the pragma to the region or the body of the function it is assigned in. It applies downward, recursively inlining the contents of the region or function.
+\item \texttt{INLINE}: Without arguments, the pragma means that the function should be inlined upward into any calling functions or regions.
+\item \texttt{INLINE OFF}: Specifies that the function should NOT be inlined upward into any calling functions or regions. This disables the inline of a specific function that may be automatically inlined, or inlined as part of a region or recursion.
+\item \texttt{INLINE REGION}: This applies the pragma to the region or the body of the function. It applies downward, inlining the contents of the region or function, but not inlining recursively through the hierarchy.
+\item \texttt{INLINE RECURSIVE}: This applies the pragma to the region or the body of the function. It applies downward, recursively inlining the contents of the region or function.
 \end{itemize}
-By default, inlining is only performed on the next level of function hierarchy, not sub-functions. However, the recursive option lets you specify inlining through levels of the hierarchy.
+By default, inlining is only performed on the next level of function hierarchy, not sub-functions. However, the recursive option permits to specify inlining through levels of the hierarchy.
 
-In our case, we used the \texttt{INLINE OFF} specification of this directive for the Floyd-Warshall's algorithm.
+In our case, we used the \texttt{INLINE OFF} specification of this directive for the Floyd-Warshall's algorithm. This allows to specify different directives for each separate loop in the algorithm.
 
 \section{Final Results}
 
@@ -86,7 +86,7 @@ The application of different directives for the algorithms produced the results 
 	\resizebox{\textwidth}{!}{%
 		\begin{tabular}{l|l|c|c|c|r|r|r|}
 			\cline{3-8}
-			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\
+			\multicolumn{2}{l|}{} & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\
 			\multicolumn{2}{l|}{}                                                                                                                        & \multicolumn{3}{c|}{\textbf{Time Performance}}                                    & \multicolumn{3}{c|}{\textbf{Space Occupation}}                                                           \\
 			\multicolumn{2}{l|}{\multirow{-3}{*}{}}                                                                                                      & \multicolumn{3}{c|}{}                                                             & \multicolumn{3}{l|}{}                                                                                    \\ \hline
 			\multicolumn{1}{|c|}{\textbf{Algorithm}}                   & \multicolumn{1}{c|}{\textbf{Directives}}                                        & \textit{Estimated Period (ns)}   & \textit{Min. Latency (CC)}    & \textit{Max. Latency (CC)}    & \multicolumn{1}{c|}{\textit{DSP}} & \multicolumn{1}{c|}{\textit{FF}} & \multicolumn{1}{c|}{\textit{LUT}} \\ \hline

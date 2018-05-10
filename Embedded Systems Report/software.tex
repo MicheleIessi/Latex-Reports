@@ -1,8 +1,8 @@
 \chapter{Software Implementation}
 \label{chapter:software}
-In this chapter we discuss about our work in splitting the \texttt{.c} files from the CC4CS Github repository\cite{cc4cs_git} to \texttt{.c} and \texttt{.h} files that can be used with Vivado HLS. They have been pushed into a repository of their own\cite{repo_our_files}.
+In this chapter we discuss about our work in splitting the \texttt{.c} files from the CC4CS Github repository\cite{cc4cs_git} to \texttt{.c} and \texttt{.h} files that can be used with Vivado HLS. They have been pushed into a repository\cite{repo_our_files}.
 
-After this, we describe our workflow in implementing and testing the correctness of our software and hardware realizations of the described algorithms.
+After this, we describe our workflow in implementing and testing the correctness of our software and hardware implementations of the described algorithms.
 
 \section{General Workflow}
 
@@ -11,14 +11,14 @@ The first thing we did was to split the original C file into 3 separate files:
 \begin{itemize}[noitemsep]
 	\item \textbf{Algorithm \texttt{.c} and \texttt{.h} files}
 	\begin{itemize}[noitemsep]
-		\item \texttt{.c} file: this file contains the functions that implement the chosen algorithm
+		\item \texttt{.c} file: this file contains the code for the chosen algorithm
 		\item \texttt{.h} file: this file contains the definitions for important constants (\textit{e.g.}: input dimension), data types, iterator types and functions of the chosen algorithm
 	\end{itemize}
 	\item \textbf{Algorithm testbench file}: this file generates input data and verifies that both the software and VHDL simulation (\textbf{Co-Simulation}) produce the same results
 \end{itemize}
 
 
-The general workflow diagram is in figure \ref{figure:translation}.
+The general workflow diagram is shown in figure \ref{figure:translation}.
 \newpage
 \begin{figure}[ht]
 	\begin{center}
@@ -62,7 +62,7 @@ The general workflow diagram is in figure \ref{figure:translation}.
 
 Here we describe the process of splitting a .c file from the original repository to a .c and .h file. As we said earlier, this process allows to customize data input types and sizes. We did this to give other developers the possibility to evaluate the same algorithms by using different input formats.
 
-As an example, we show this process for the MergeSort algorithm in Listing \ref{lst:mergesort_original}.
+As an example, we show this process for the MergeSort algorithm shown in Listing \ref{lst:mergesort_original}.
 
 \begin{lstlisting}[label=lst:mergesort_original,caption=Original Mergesort Code,language=C,tabsize=4]
 #include <stdint.h>
@@ -127,15 +127,15 @@ void main() {
 \end{lstlisting}
 
 
-It is worth noting that this code has been partially refactored to better fit in this report. Also, the original code had \texttt{for} cycles that were spanned on 3 lines. This was made in this way to let the profiler (\texttt{gcov}) count correctly C statements in the original \textit{CC4CS} project. Therefore, we only used one line for the sake of visualization.
+It is worth noting that this code has been partially refactored to better fit in this report. Also, the original code had \texttt{for} cycles that were spanned on 3 lines. This was made in this way to let the profiler (\texttt{gcov}) correctly counting C statements in the original \textit{CC4CS} project. Therefore, we only used one line for the sake of visualization.
 
 \subsection{Removed and Moved Code}
 
-The first main modification done on the code was removing the \texttt{resetValues()} method. The duty of this method was to give a stop condition when the algorithm was run onto an 8051 Microcontroller. Other parts were removed as well due to this (line \texttt{3} and \texttt{52}).
+The first main modification done on the code was the removal of the \texttt{resetValues()} method. The duty of this method was to give a stop condition when the algorithm was run onto an 8051 Microcontroller. Other parts were removed for the same reason (line \texttt{3} and \texttt{52}).
 
-The second modification on the code was creating a header file and moving parts of the code within it. This allows for great customizability and code reuse, as the .c file is independent from data types. More specifically, the variables moved inside the header file were \texttt{TARGET\_TYPE} and \texttt{TARGET\_INDEX}. A \texttt{define} named \texttt{SIZE} was also added to let the developer choose the size of the input.
+The second modification on the code was the creation a header file and the moving of parts of the code within it. This allows for great customizability and code reuse, as the .c file is independent from data types. More specifically, the variables moved inside the header file were \texttt{TARGET\_TYPE} and \texttt{TARGET\_INDEX}. A \texttt{define} named \texttt{SIZE} was also added to let the developer choose the size of the input.
 
-The code in Listings \ref{lst:mergesort_header} and \ref{lst:mergesort_c} represent the final \texttt{.h} and \texttt{.c} files.
+The code shown in Listings \ref{lst:mergesort_header} and \ref{lst:mergesort_c} represent the final \texttt{.h} and \texttt{.c} files.
 
 \bigskip
 
